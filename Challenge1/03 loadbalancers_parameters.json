@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": null
+    },
+    "network_resourcegroup": {
+      "value": null
+    },
+    "virtualNetworkName": {
+      "value": null
+    },
+    "websubnet_Name": {
+      "value": null
+    },
+    "appsubnet_name": {
+      "value": null
+    },
+    "dbsubnet_name": {
+      "value": null
+    },
+    "ilb1_name": {
+      "value": null
+    },
+    "ilb1_sku": {
+      "value": null
+    },
+    "ilb1_backendIPAddresses": {
+      "value": null
+    },
+    "ilb2_name": {
+      "value": null
+    },
+    "ilb2_sku": {
+      "value": null
+    },
+    "ilb2_backendIPAddresses": {
+      "value": null
+    },
+    "applicationGatewayName": {
+      "value": null
+    },
+    "applicationGatewaySize": {
+      "value": null
+    },
+    "appgateway_backendIPAddresses": {
+      "value": null
+    },
+    "applicationGatewayInstanceCount": {
+      "value": null
+    }
+  }
+}

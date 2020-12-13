@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": null
+    },
+    "virtualNetworkName": {
+      "value": null
+    },
+    "vnetaddressrange": {
+      "value": null
+    },
+    "gateway_subnet_name": {
+      "value": null
+    },
+    "gateway_subnet_addressRange": {
+      "value": null
+    },
+    "web_subnet_name": {
+      "value": null
+    },
+    "web_subnet_addressRange": {
+      "value": null
+    },
+    "app_subnet_name": {
+      "value": null
+    },
+    "app_subnet_addressRange": {
+      "value": null
+    },
+    "db_subnet_name": {
+      "value": null
+    },
+    "db_subnet_addressRange": {
+      "value": null
+    },
+    "gateway_nsg_name": {
+      "value": null
+    },
+    "web_nsg_name": {
+      "value": null
+    },
+    "app_nsg_name": {
+      "value": null
+    },
+    "db_nsg_name": {
+      "value": null
+    },
+    "gatewaynsg_Rules": {
+      "value": null
+    },
+    "webnsg_Rules": {
+      "value": null
+    },
+    "appnsg_Rules": {
+      "value": null
+    },
+    "dbnsg_Rules": {
+      "value": null
+    }
+  }
+}

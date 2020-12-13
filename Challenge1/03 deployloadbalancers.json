@@ -1,0 +1,232 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+	    "location": {
+            "type": "string"
+        },
+		"network_resourcegroup": {
+            "type": "string"
+        },		
+		"virtualNetworkName": {
+            "type": "string"
+        },
+		"websubnet_Name": {
+            "type": "string"
+        },
+		"appsubnet_name": {
+			"type": "string"
+		},
+		"dbsubnet_name": {
+			"type": "string"
+		},
+        "ilb1_name": {
+            "type": "string"
+        },
+        "ilb1_sku": {
+            "type": "string"
+        },
+		"ilb1_backendIPAddresses": {
+			"type": "string"
+		},
+		"ilb2_name": {
+            "type": "string"
+        },
+        "ilb2_sku": {
+            "type": "string"
+        },
+		"ilb2_backendIPAddresses": {
+			"type": "string"
+		},
+		"applicationGatewayName": {
+			"type": "string"
+		},
+		"applicationGatewaySize": {
+			"type": "string"
+		},
+		"appgateway_backendIPAddresses": {
+			"type": "string"
+		},
+		"applicationGatewayInstanceCount": {
+			"type": "int"
+		}
+    },
+	"variables": {
+	    "vnetId": "[parameters('network_resourcegroup'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "websubnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('websubnet_Name'))]",
+		"appsubnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('appsubnet_Name'))]",
+		"dbsubnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('dbsubnet_Name'))]"     
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('ilb1_name')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('ilb1_sku')]"
+            },
+            "dependsOn": [],
+            "tags": {},
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "LoadBalancer1FrontEnd",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[parameters('appsubnetRef')]"
+                            }
+                        }
+                    }
+                ],
+				"backendAddressPools": [{
+					"name": "ilb1BackendPool",
+					"properties": {
+						"BackendAddresses": "[parameters('ilb1_backendIPAddresses')]"
+					}
+				}],
+				"loadBalancingRules": [
+				{
+				"properties": {
+					"frontendIPConfiguration": {
+					"id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', [parameters('ilb1_name')], 'LoadBalancerFrontend')]"
+				},
+					"backendAddressPool": {
+					"id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', [parameters('ilb1_name')], 'BackendPool1')]"
+				},
+				"probe": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', [parameters('ilb1_name')], 'ilb1_probe')]"
+				},
+				"protocol": "Tcp",
+				"frontendPort": 80,
+				"backendPort": 80,
+				"idleTimeoutInMinutes": 15
+				},
+				"Name": "lbrule"
+				}
+				]
+            }
+        },
+		{
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('ilb2_name')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('ilb2_sku')]"
+            },
+            "dependsOn": [],
+            "tags": {},
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "LoadBalancer1FrontEnd",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[parameters('dbsubnetRef')]"
+                            }
+                        }
+                    }
+                ],
+				"backendAddressPools": [{
+					"name": "ilb2BackendPool",
+					"properties": {
+						"BackendAddresses": "[parameters('ilb2_backendIPAddresses')]"
+					}
+				}],
+				"loadBalancingRules": [
+				{
+				"properties": {
+					"frontendIPConfiguration": {
+					"id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', [parameters('ilb2_name')], 'LoadBalancerFrontend')]"
+				},
+					"backendAddressPool": {
+					"id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', [parameters('ilb2_name')], 'BackendPool1')]"
+				},
+				"probe": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', [parameters('ilb2_name')], 'ilb1_probe')]"
+				},
+				"protocol": "Tcp",
+				"frontendPort": 80,
+				"backendPort": 80,
+				"idleTimeoutInMinutes": 15
+				},
+				"Name": "lbrule"
+				}
+				]
+            }
+        },
+		{
+			"apiVersion": "2020-05-01",
+			"name": "[parameters('applicationGatewayName')]",
+			"type": "Microsoft.Network/applicationGateways",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+			],
+			"properties": {
+				"sku": {
+					"name": "[parameters('applicationGatewaySize')]",
+					"tier": "Standard",
+					"capacity": "[parameters('applicationGatewayInstanceCount')]"
+				},
+				"frontendIPConfigurations": [{
+					"name": "appGatewayFrontendIP",
+					"properties": {
+						"subnet": {
+							"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('websubnet_Name'))]"
+						}
+					}
+				}],
+				"frontendPorts": [{
+					"name": "appGatewayFrontendPort",
+					"properties": {
+						"Port": 443
+					}
+				}],
+				"backendAddressPools": [{
+					"name": "appGatewayBackendPool",
+					"properties": {
+						"BackendAddresses": "[parameters('appgateway_backendIPAddresses')]"
+					}
+				}],
+				"backendHttpSettingsCollection": [{
+					"name": "appGatewayBackendHttpSettings",
+					"properties": {
+						"Port": 443,
+						"Protocol": "Https"
+					}
+				}],
+				"httpListeners": [{
+					"name": "appGatewayHttpListener",
+					"properties": {
+						"FrontendIpConfiguration": {
+							"id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('applicationGatewayName'), 'appGatewayFrontendIP')]"
+						},
+						"FrontendPort": {
+							"id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('applicationGatewayName'), 'appGatewayFrontendPort')]"
+						},
+						"Protocol": "Https"
+					}
+				}],
+				"requestRoutingRules": [{
+					"Name": "rule1",
+					"properties": {
+						"RuleType": "Basic",
+						"httpListener": {
+							"id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('applicationGatewayName'), 'appGatewayHttpListener')]"
+						},
+						"backendAddressPool": {
+							"id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('applicationGatewayName'), 'appGatewayBackendPool')]"
+						},
+						"backendHttpSettings": {
+							"id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('applicationGatewayName'), 'appGatewayBackendHttpSettings')]"
+						}
+					}
+				}]
+			}
+		}
+    ]
+}

@@ -1,0 +1,650 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+		"network_resourcegroup": {
+            "type": "string"
+        },		
+		"virtualNetworkName": {
+            "type": "string"
+        },
+		"websubnet_Name": {
+            "type": "string"
+        },
+		"appsubnet_name": {
+			"type": "string"
+		},
+		"dbsubnet_name": {
+			"type": "string"
+		},
+		"webnsg_name": {
+			"type": "string"
+		},
+		"appnsg_name": {
+			"type": "string"
+		},
+		"dbnsg_name": {
+			"type": "string"
+		},
+        "webvm1_networkInterfaceName": {
+            "type": "string"
+        },
+		"webvm2_networkInterfaceName": {
+            "type": "string"
+        },
+		"appvm1_networkInterfaceName": {
+            "type": "string"
+        },
+		"appvm2_networkInterfaceName": {
+            "type": "string"
+        },
+		"dbvm1_networkInterfaceName": {
+            "type": "string"
+        },
+		"dbvm2_networkInterfaceName": {
+            "type": "string"
+        },
+		"webavailabilitySetName": {
+            "type": "string"
+        },
+		"appavailabilitySetName": {
+            "type": "string"
+        },
+		"dbavailabilitySetName": {
+            "type": "string"
+        },
+        "availabilitySet_FaultDomainCount": {
+            "type": "int"
+        },
+        "availabilitySet_UpdateDomainCount": {
+            "type": "int"
+        },
+        "webvm1_Name": {
+            "type": "string"
+        },
+        "webvm1_osDiskType": {
+            "type": "string"
+        },
+        "webvm1_size": {
+            "type": "string"
+        },
+        "webvm1_adminUsername": {
+            "type": "string"
+        },
+        "webvm1_adminPassword": {
+            "type": "secureString"
+        },
+		"webvm2_Name": {
+            "type": "string"
+        },
+        "webvm2_osDiskType": {
+            "type": "string"
+        },
+        "webvm2_size": {
+            "type": "string"
+        },
+        "webvm2_adminUsername": {
+            "type": "string"
+        },
+        "webvm2_adminPassword": {
+            "type": "secureString"
+        },
+		"appvm1_Name": {
+            "type": "string"
+        },
+        "appvm1_osDiskType": {
+            "type": "string"
+        },
+        "appvm1_size": {
+            "type": "string"
+        },
+        "appvm1_adminUsername": {
+            "type": "string"
+        },
+        "appvm1_adminPassword": {
+            "type": "secureString"
+        },
+		"appvm2_Name": {
+            "type": "string"
+        },
+        "appvm2_osDiskType": {
+            "type": "string"
+        },
+        "appvm2_size": {
+            "type": "string"
+        },
+        "appvm2_adminUsername": {
+            "type": "string"
+        },
+        "appvm2_adminPassword": {
+            "type": "secureString"
+        },
+		"dbvm1_Name": {
+            "type": "string"
+        },
+        "dbvm1_osDiskType": {
+            "type": "string"
+        },
+        "dbvm1_size": {
+            "type": "string"
+        },
+        "dbvm1_adminUsername": {
+            "type": "string"
+        },
+        "dbvm1_adminPassword": {
+            "type": "secureString"
+        },
+		"dbvm2_Name": {
+            "type": "string"
+        },
+        "dbvm2_osDiskType": {
+            "type": "string"
+        },
+        "dbvm2_size": {
+            "type": "string"
+        },
+        "dbvm2_adminUsername": {
+            "type": "string"
+        },
+        "dbvm2_adminPassword": {
+            "type": "secureString"
+        }
+    },
+    "variables": {
+        "vnetId": "[parameters('network_resourcegroup'),'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "websubnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('websubnet_Name'))]",
+		"appsubnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('appsubnet_Name'))]",
+		"dbsubnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('dbsubnet_Name'))]",
+		"webnsgId": "[parameters('network_resourcegroup'), 'Microsoft.Network/networkSecurityGroups', parameters('webnsg_name'))]",
+		"appnsgId": "[parameters('network_resourcegroup'), 'Microsoft.Network/networkSecurityGroups', parameters('appnsg_name'))]",
+		"dbnsgId": "[parameters('network_resourcegroup'), 'Microsoft.Network/networkSecurityGroups', parameters('dbnsg_name'))]"        
+    },
+    "resources": [
+        {
+            "name": "[parameters('webvm1_networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('webnsg_Name'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "webvm1ipconfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('websubnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('webnsgId')]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('webvm2_networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('webnsg_Name'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "webvm2ipconfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('websubnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('webnsgId')]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('appvm1_networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('appnsg_name'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "appvm1ipconfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('appsubnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('appnsgId')]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('appvm2_networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('appnsg_Name'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "appvm2ipconfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('appsubnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('appnsgId')]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('dbvm1_networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('dbnsg_Name'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "dbvm1ipconfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('dbsubnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('dbnsgId')]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('dbvm2_networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('dbnsg_Name'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "dbvm2ipconfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('dbsubnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('dbnsgId')]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('webavailabilitySetName')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "platformFaultDomainCount": "[parameters('availabilitySet_FaultDomainCount')]",
+                "platformUpdateDomainCount": "[parameters('availabilitySet_UpdateDomainCount')]"
+            },
+            "sku": {
+                "name": "Aligned"
+            }
+        },
+		{
+            "name": "[parameters('appavailabilitySetName')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "platformFaultDomainCount": "[parameters('availabilitySet_FaultDomainCount')]",
+                "platformUpdateDomainCount": "[parameters('availabilitySet_UpdateDomainCount')]"
+            },
+            "sku": {
+                "name": "Aligned"
+            }
+        },
+		{
+            "name": "[parameters('dbavailabilitySetName')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "platformFaultDomainCount": "[parameters('availabilitySet_FaultDomainCount')]",
+                "platformUpdateDomainCount": "[parameters('availabilitySet_UpdateDomainCount')]"
+            },
+            "sku": {
+                "name": "Aligned"
+            }
+        },
+        {
+            "name": "[parameters('webvm1_Name')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('webvm1_networkInterfaceName'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('webavailabilitySetName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('webvm1_size')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('webvm1_osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2019-Datacenter",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('webvm1_networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('webvm1_Name')]",
+                    "adminUsername": "[parameters('webvm1_adminUsername')]",
+                    "adminPassword": "[parameters('webvm1_adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('webavailabilitySetName'))]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('webvm2_Name')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('webvm2_networkInterfaceName'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('webavailabilitySetName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('webvm2_size')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('webvm2_osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2019-Datacenter",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('webvm2_networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('webvm2_Name')]",
+                    "adminUsername": "[parameters('webvm2_adminUsername')]",
+                    "adminPassword": "[parameters('webvm2_adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('webavailabilitySetName'))]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('appvm1_Name')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('appvm1_networkInterfaceName'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('appavailabilitySetName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('appvm1_size')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('appvm1_osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2019-Datacenter",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('appvm1_networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('appvm1_Name')]",
+                    "adminUsername": "[parameters('appvm1_adminUsername')]",
+                    "adminPassword": "[parameters('appvm1_adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('appavailabilitySetName'))]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('appvm2_Name')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('appvm2_networkInterfaceName'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('appavailabilitySetName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('appvm2_size')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('appvm2_osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2019-Datacenter",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('appvm2_networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('appvm2_Name')]",
+                    "adminUsername": "[parameters('appvm2_adminUsername')]",
+                    "adminPassword": "[parameters('appvm2_adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('appavailabilitySetName'))]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('dbvm1_Name')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('dbvm1_networkInterfaceName'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('dbavailabilitySetName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('dbvm1_size')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('dbvm1_osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2019-Datacenter",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('dbvm1_networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('dbvm1_Name')]",
+                    "adminUsername": "[parameters('dbvm1_adminUsername')]",
+                    "adminPassword": "[parameters('dbvm1_adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('dbavailabilitySetName'))]"
+                }
+            }
+        },
+		{
+            "name": "[parameters('dbvm2_Name')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('dbvm2_networkInterfaceName'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('dbavailabilitySetName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('dbvm2_size')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('dbvm2_osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2019-Datacenter",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('dbvm2_networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('dbvm2_Name')]",
+                    "adminUsername": "[parameters('dbvm2_adminUsername')]",
+                    "adminPassword": "[parameters('dbvm2_adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('dbavailabilitySetName'))]"
+                }
+            }
+        }
+    ]
+}

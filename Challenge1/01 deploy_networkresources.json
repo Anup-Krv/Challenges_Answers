@@ -1,0 +1,206 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"location": {
+			"type": "string"
+		},
+		"virtualNetworkName": {
+			"type": "string"
+		},
+		"vnetaddressrange": {
+			"type": "array"
+		},
+		"gateway_subnet_name": {
+			"type": "string"
+		},
+		"gateway_subnet_addressRange": {
+			"type": "string"
+		},
+		"web_subnet_name": {
+			"type": "string"
+		},
+		"web_subnet_addressRange": {
+			"type": "string"
+		},
+		"app_subnet_name": {
+			"type": "string"
+		},
+		"app_subnet_addressRange": {
+			"type": "string"
+		},
+		"db_subnet_name": {
+			"type": "string"
+		},
+		"db_subnet_addressRange": {
+			"type": "string"
+		},
+		"gateway_nsg_name": {
+			"type": "string"
+		},
+		"web_nsg_name": {
+			"type": "string"
+		},
+		"app_nsg_name": {
+			"type": "string"
+		},
+		"db_nsg_name": {
+			"type": "string"
+		},
+		"gatewaynsg_Rules": {
+            "type": "array"
+        },
+		"webnsg_Rules": {
+            "type": "array"
+        },
+		"appnsg_Rules": {
+            "type": "array"
+        },
+		"dbnsg_Rules": {
+            "type": "array"
+        }
+	},
+	"variables": {},
+	"resources": [{
+			"name": "[parameters('virtualNetworkName')]",
+			"type": "Microsoft.Network/VirtualNetworks",
+			"apiVersion": "2020-05-01",
+			"location": "[parameters('location')]",
+			"dependsOn": [],
+			"tags": {},
+			"properties": {
+				"addressSpace": {
+					"addressPrefixes": [
+						"[parameters('vnetaddressrange')]"
+					]
+				},
+				"subnets": [
+					{
+						"name": "[parameters('gateway_subnet_name')]",
+						"properties": {
+							"addressPrefix": "[parameters('gateway_subnet_addressRange')]"
+						}
+					},
+					{
+						"name": "[parameters('web_subnet_name')]",
+						"properties": {
+							"addressPrefix": "[parameters('web_subnet_addressRange')]"
+						}
+					},
+					{
+						"name": "[parameters('app_subnet_name')]",
+						"properties": {
+							"addressPrefix": "[parameters('app_subnet_addressRange')]"
+						}
+					},
+					{
+						"name": "[parameters('db_subnet_name')]",
+						"properties": {
+							"addressPrefix": "[parameters('db_subnet_addressRange')]"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"name": "[concat(parameters('virtualNetworkName'), '/', parameters('gateway_subnet_name'))]",
+			"apiVersion": "2020-05-01",
+			"properties": {
+				"addressPrefix": "[parameters('gateway_subnet_addressRange')]",
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('gateway_nsg_name'))]"
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+				"[resourceId('Microsoft.Network/networkSecurityGroups', parameters('gateway_nsg_name'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"name": "[concat(parameters('virtualNetworkName'), '/', parameters('web_subnet_name'))]",
+			"apiVersion": "2020-05-01",
+			"properties": {
+				"addressPrefix": "[parameters('web_subnet_addressRange')]",
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('web_nsg_name'))]"
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+				"[resourceId('Microsoft.Network/networkSecurityGroups', parameters('web_nsg_name'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"name": "[concat(parameters('virtualNetworkName'), '/', parameters('app_subnet_name'))]",
+			"apiVersion": "2020-05-01",
+			"properties": {
+				"addressPrefix": "[parameters('app_subnet_addressRange')]",
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('app_nsg_name'))]"
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+				"[resourceId('Microsoft.Network/networkSecurityGroups', parameters('app_nsg_name'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"name": "[concat(parameters('virtualNetworkName'), '/', parameters('db_subnet_name'))]",
+			"apiVersion": "2020-05-01",
+			"properties": {
+				"addressPrefix": "[parameters('db_subnet_addressRange')]",
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('db_nsg_name'))]"
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+				"[resourceId('Microsoft.Network/networkSecurityGroups', parameters('db_nsg_name'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"apiVersion": "2020-05-01",
+			"name": "[parameters('gateway_nsg_name')]",
+			"location": "[parameters('location')]",
+			"tags": {},
+			"properties": {
+				"securityRules": "[parameters('gatewaynsg_Rules')]"
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"apiVersion": "2020-05-01",
+			"name": "[parameters('web_nsg_name')]",
+			"location": "[parameters('location')]",
+			"tags": {},
+			"properties": {
+				"securityRules": "[parameters('webnsg_Rules')]"
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"apiVersion": "2020-05-01",
+			"name": "[parameters('app_nsg_name')]",
+			"location": "[parameters('location')]",
+			"tags": {},
+			"properties": {
+				"securityRules": "[parameters('appnsg_Rules')]"
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"apiVersion": "2020-05-01",
+			"name": "[parameters('db_nsg_name')]",
+			"location": "[parameters('location')]",
+			"tags": {},
+			"properties": {
+				"securityRules": "[parameters('dbnsg_Rules')]"
+			}
+		}
+	]
+}

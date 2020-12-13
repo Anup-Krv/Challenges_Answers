@@ -1,0 +1,186 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": null
+    },
+    "network_resourcegroup": {
+      "value": null
+    },
+    "virtualNetworkName": {
+      "value": null
+    },
+    "websubnet_Name": {
+      "value": null
+    },
+    "appsubnet_name": {
+      "value": null
+    },
+    "dbsubnet_name": {
+      "value": null
+    },
+    "webnsg_name": {
+      "value": null
+    },
+    "appnsg_name": {
+      "value": null
+    },
+    "dbnsg_name": {
+      "value": null
+    },
+    "webvm1_networkInterfaceName": {
+      "value": null
+    },
+    "webvm2_networkInterfaceName": {
+      "value": null
+    },
+    "appvm1_networkInterfaceName": {
+      "value": null
+    },
+    "appvm2_networkInterfaceName": {
+      "value": null
+    },
+    "dbvm1_networkInterfaceName": {
+      "value": null
+    },
+    "dbvm2_networkInterfaceName": {
+      "value": null
+    },
+    "webavailabilitySetName": {
+      "value": null
+    },
+    "appavailabilitySetName": {
+      "value": null
+    },
+    "dbavailabilitySetName": {
+      "value": null
+    },
+    "availabilitySet_FaultDomainCount": {
+      "value": null
+    },
+    "availabilitySet_UpdateDomainCount": {
+      "value": null
+    },
+    "webvm1_Name": {
+      "value": null
+    },
+    "webvm1_osDiskType": {
+      "value": null
+    },
+    "webvm1_size": {
+      "value": null
+    },
+    "webvm1_adminUsername": {
+      "value": null
+    },
+    "webvm1_adminPassword": {
+       "reference": {
+			"keyVault": {
+			    "id": ""
+			},
+			"secretName": ""
+	}
+    },
+    "webvm2_Name": {
+      "value": null
+    },
+    "webvm2_osDiskType": {
+      "value": null
+    },
+    "webvm2_size": {
+      "value": null
+    },
+    "webvm2_adminUsername": {
+      "value": null
+    },
+    "webvm2_adminPassword": {
+        "reference": {
+			"keyVault": {
+			    "id": ""
+			},
+			"secretName": ""
+	}
+    },
+    "appvm1_Name": {
+      "value": null
+    },
+    "appvm1_osDiskType": {
+      "value": null
+    },
+    "appvm1_size": {
+      "value": null
+    },
+    "appvm1_adminUsername": {
+      "value": null
+    },
+    "appvm1_adminPassword": {
+       "reference": {
+			"keyVault": {
+			    "id": ""
+			},
+			"secretName": ""
+	}
+    },
+    "appvm2_Name": {
+      "value": null
+    },
+    "appvm2_osDiskType": {
+      "value": null
+    },
+    "appvm2_size": {
+      "value": null
+    },
+    "appvm2_adminUsername": {
+      "value": null
+    },
+    "appvm2_adminPassword": {
+       "reference": {
+			"keyVault": {
+			    "id": ""
+			},
+			"secretName": ""
+	}
+    },
+    "dbvm1_Name": {
+      "value": null
+    },
+    "dbvm1_osDiskType": {
+      "value": null
+    },
+    "dbvm1_size": {
+      "value": null
+    },
+    "dbvm1_adminUsername": {
+      "value": null
+    },
+    "dbvm1_adminPassword": {
+       "reference": {
+			"keyVault": {
+			    "id": ""
+			},
+			"secretName": ""
+	}
+    },
+    "dbvm2_Name": {
+      "value": null
+    },
+    "dbvm2_osDiskType": {
+      "value": null
+    },
+    "dbvm2_size": {
+      "value": null
+    },
+    "dbvm2_adminUsername": {
+      "value": null
+    },
+    "dbvm2_adminPassword": {
+       "reference": {
+			"keyVault": {
+			    "id": ""
+			},
+			"secretName": ""
+	}
+    }
+  }
+}
