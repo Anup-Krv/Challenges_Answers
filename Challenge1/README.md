@@ -15,9 +15,9 @@ Implementation steps
 ---------------------
 The above setup is implemented by using Azure ARM templates. 
 
-* Step 1: The first template deploynetworkresources.json is deployed to create Vnet, Subnets and NSGs. 
-* Step 2: The second template deployvirtualmachines.json is deployed to create Virtual machines and Availability Sets in web, app and db tiers. An existing KeyVault reference can be added in the parameter file, to avoid hardcoding VM passwords within the template file.
-* Step 3: The third template deployloadbalancers.json is deployed to create Application Gateway and LoadBalancers.
+* Step 1: The first template deploynetworkresources.json and its parameterfile is deployed to create Vnet, Subnets and NSGs. 
+* Step 2: The second template deployvirtualmachines.json and its parameterfile is deployed to create Virtual machines and Availability Sets in web, app and db tiers. An existing KeyVault reference can be added in the parameter file, to avoid hardcoding VM passwords within the template file.
+* Step 3: The third template deployloadbalancers.json and its parameterfile is deployed to create Application Gateway and LoadBalancers.
 
 
 
