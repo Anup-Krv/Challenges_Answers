@@ -1,0 +1,14 @@
+
+
+# Configure aws cli using access key, secret key, location 
+aws configure
+# use instance id to get the details about an ec2 instance
+aws ec2 describe-instances --instance-ids i-034e75586117d45fe --output json
+# use additional filters to add conditions
+aws ec2 describe-instances --filters Name=ip-address,Values=3.112.197.65 Name=subnet-id,Values=subnet-029dfe7 --output json
+# To find the value of a single key- Example: DNSname
+aws ec2 describe-instances --instance-ids i-034e75586117d45fe  --query "Reservations[*].Instances[*].PrivateDnsName" --output text
+#Instnace metadata can be obtained from within an EC2 instance by running Invoke-RestMethod or curl
+Invoke-RestMethod -uri http://169.254.169.254/latest/meta-data/
+Invoke-RestMethod -uri http://169.254.169.254/latest/meta-data/ami-id
+Invoke-RestMethod -uri http://169.254.169.254/latest/meta-data/public-ipv4
